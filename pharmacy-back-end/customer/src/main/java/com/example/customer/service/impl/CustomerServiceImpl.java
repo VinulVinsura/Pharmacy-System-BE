@@ -72,8 +72,4 @@ public class CustomerServiceImpl implements CustomerService {
 
     }
 
-    @Override
-    public ResponseEntity<ApiResponse> login(LoginDto loginDto) {
-        return null;
-    }
 }

@@ -28,8 +28,4 @@ public class CustomerController {
            return  customerService.save(customerDto);
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse> login(@RequestBody LoginDto loginDto){
-        return customerService.login(loginDto);
-    }
 }

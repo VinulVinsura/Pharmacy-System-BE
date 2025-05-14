@@ -8,5 +8,5 @@ import org.springframework.http.ResponseEntity;
 public interface CustomerService {
     ResponseEntity<ApiResponse> save(CustomerDto customerDto);
 
-    ResponseEntity<ApiResponse> login(LoginDto loginDto);
+
 }

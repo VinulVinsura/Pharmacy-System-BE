@@ -1,6 +1,5 @@
-package com.example.customer.config.security;
+package com.example.auth.config.security;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,13 +14,17 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
+
 public class AuthSecurityConfig {
 
     @Value("${security.permitted-urls}")
     private String[] permittedURL;
 
-    private final JwtAuthenticationFilter jwtAuthFilter;
+    private JwtAuthenticationFilter jwtAuthFilter;
+
+    public AuthSecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
+        this.jwtAuthFilter = jwtAuthFilter;
+    }
 
 
     @Bean
@@ -51,7 +54,5 @@ public class AuthSecurityConfig {
         source.registerCorsConfiguration("/**", config);
         return source;
     }
-
-
 
 }
