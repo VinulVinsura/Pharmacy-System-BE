@@ -1,6 +1,7 @@
 package com.example.customer.service.impl;
 
 import com.example.customer.dto.request.CustomerDto;
+import com.example.customer.dto.request.LoginDto;
 import com.example.customer.dto.response.ApiResponse;
 import com.example.customer.entity.Customer;
 import com.example.customer.enums.Role;
@@ -9,15 +10,22 @@ import com.example.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepo customerRepo;
+    private final PasswordEncoder passwordEncoder;
+
+    public CustomerServiceImpl(CustomerRepo customerRepo, PasswordEncoder passwordEncoder) {
+        this.customerRepo = customerRepo;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Override
     public ResponseEntity<ApiResponse> save(CustomerDto customerDto) {
 
@@ -34,15 +42,15 @@ public class CustomerServiceImpl implements CustomerService {
               byId.get().setAddress(customerDto.getAddress());
               byId.get().setUpdatedTime(new Date());
               Customer updated = customerRepo.save(byId.get());
-              return ResponseEntity.status(HttpStatus.UPGRADE_REQUIRED)
-                      .body(new ApiResponse(HttpStatus.UPGRADE_REQUIRED.value(),"Customer Updated",updated));
+              return ResponseEntity.status(HttpStatus.OK)
+                      .body(new ApiResponse(HttpStatus.OK.value(),"Customer Updated",updated));
 
           }
 
           Customer customer= Customer.builder()
                   .fullName(customerDto.getFullName())
                   .userName(customerDto.getUserName())
-                  .password(customerDto.getPassword())
+                  .password(passwordEncoder.encode(customerDto.getPassword()))
                   .email(customerDto.getEmail())
                   .contact(customerDto.getContact())
                   .city(customerDto.getCity())
@@ -62,5 +70,10 @@ public class CustomerServiceImpl implements CustomerService {
                   .body(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), null));
       }
 
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse> login(LoginDto loginDto) {
+        return null;
     }
 }

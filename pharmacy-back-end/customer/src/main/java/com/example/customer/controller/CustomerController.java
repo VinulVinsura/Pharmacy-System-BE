@@ -1,6 +1,7 @@
 package com.example.customer.controller;
 
 import com.example.customer.dto.request.CustomerDto;
+import com.example.customer.dto.request.LoginDto;
 import com.example.customer.dto.response.ApiResponse;
 import com.example.customer.service.CustomerService;
 import lombok.RequiredArgsConstructor;
@@ -25,5 +26,10 @@ public class CustomerController {
     @PostMapping("/save-customer")
     public ResponseEntity<ApiResponse> saveCustomer(@RequestBody CustomerDto customerDto){
            return  customerService.save(customerDto);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse> login(@RequestBody LoginDto loginDto){
+        return customerService.login(loginDto);
     }
 }
