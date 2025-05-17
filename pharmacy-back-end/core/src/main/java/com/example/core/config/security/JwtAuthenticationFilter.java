@@ -1,32 +1,36 @@
-package com.example.auth.config.security;
+package com.example.core.config.security;
 
-import com.example.auth.service.CustomerDetailsService;
-import com.example.auth.service.impl.JwtTokenService;
+import com.example.core.feign.AuthControllerClient;
+import com.example.core.service.impl.JwtTokenService;
 import jakarta.annotation.Nullable;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Collection;
 
 @Configuration
-@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private JwtTokenService jwtService;
-    private CustomerDetailsService customerDetailsService;
+    private AuthControllerClient authControllerClient;
+    private static final Logger log = LoggerFactory.getLogger(JwtTokenService.class);
 
-    public JwtAuthenticationFilter(JwtTokenService jwtService, CustomerDetailsService customerDetailsService) {
+    public JwtAuthenticationFilter(JwtTokenService jwtService ,AuthControllerClient client) {
         this.jwtService = jwtService;
-        this.customerDetailsService = customerDetailsService;
+        this.authControllerClient=client;
     }
 
 
@@ -36,33 +40,33 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                                     @Nullable FilterChain filterChain) throws ServletException, IOException {
 
 
-
         String authHeader = request.getHeader("Authorization");
         if(authHeader == null || !authHeader.startsWith("Bearer ")){
-//            if(request.getServletPath().equals("/auth/login") ||
-//               request.getServletPath().equals("/auth/get-user-details/{userName}"))
-//            {
-
                 filterChain.doFilter(request,response);
                 return;
-//            }
         }
+
         String token=authHeader.substring(7);
-        String username=jwtService.extractUsername(token);
+        String username=jwtService.extractUserName(token);
+
         if(username !=null && SecurityContextHolder.getContext().getAuthentication()==null){
 
-            if(!jwtService.isValidToken(token)){
-
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            if(!jwtService.isValid(token)){
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Unauthorized : Invalid Token");
                 response.getWriter().flush();
                 return;
             }
-            UserDetails userDetail = customerDetailsService.loadUserByUsername(username);
+            Collection<? extends GrantedAuthority> grantedAuthorities = authControllerClient.getUserDetails(username);
+            log.error("==============================================");
+//            log.info(grantedAuthorities.toString());
+//            UserDetails userDetail = customerDetailsService.loadUserByUsername(username);
 
             UsernamePasswordAuthenticationToken authToken=new UsernamePasswordAuthenticationToken(
-                    userDetail,null,userDetail.getAuthorities()
+                    username,null,grantedAuthorities
             );
+
+            log.error("+++++++++++++++++++++++++++++++++++++++++++++++++");
 
             authToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request)

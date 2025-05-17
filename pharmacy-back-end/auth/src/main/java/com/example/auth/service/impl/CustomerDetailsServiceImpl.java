@@ -12,6 +12,7 @@ public class CustomerDetailsServiceImpl implements CustomerDetailsService, UserD
 
     private CustomerRepo customerRepo;
 
+
     public CustomerDetailsServiceImpl(CustomerRepo customerRepo) {
         this.customerRepo = customerRepo;
     }
