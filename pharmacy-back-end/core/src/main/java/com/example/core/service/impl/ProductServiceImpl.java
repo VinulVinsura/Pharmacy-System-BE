@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -56,6 +57,69 @@ public class ProductServiceImpl implements ProductService {
 
 
         }catch (Exception ex) {
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), null)
+            );
+        }
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse> getAllProduct() {
+        try {
+            List<Product> all = productRepo.findAll();
+            return ResponseEntity.status(HttpStatus.FOUND).body(
+                    new ApiResponse(HttpStatus.FOUND.value(), "",all)
+            );
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), null)
+            );
+        }
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse> getProductById(Integer id) {
+        try {
+            Optional<Product> byId = productRepo.findById(id);
+            if(byId.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ApiResponse(HttpStatus.NOT_FOUND.value(), "Invalid ID",null)
+                );
+            }
+
+            return ResponseEntity.status(HttpStatus.FOUND).body(
+                    new ApiResponse(HttpStatus.FOUND.value(), "FOUND",byId)
+            );
+
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+                    new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), null)
+            );
+        }
+    }
+
+    @Override
+    public ResponseEntity<ApiResponse> deleteProduct(Integer prodId) {
+        try {
+            Optional<Product> byId = productRepo.findById(prodId);
+            if(byId.isEmpty()){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                        new ApiResponse(HttpStatus.NOT_FOUND.value(), "Invalid ID",null)
+                );
+            }
+
+            productRepo.delete(byId.get());
+            return ResponseEntity.status(HttpStatus.OK).body(
+                    new ApiResponse(HttpStatus.OK.value(), byId.get().getProdName()+" Product delete success",null)
+            );
+
+
+
+        }catch (Exception ex){
             ex.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                     new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), ex.getMessage(), null)

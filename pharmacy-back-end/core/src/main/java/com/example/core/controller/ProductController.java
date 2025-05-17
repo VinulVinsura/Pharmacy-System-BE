@@ -22,4 +22,20 @@ public class ProductController {
         return  productService.saveProduct(productDto);
 
     }
+
+    @GetMapping("/get-all-product")
+    public ResponseEntity<ApiResponse> getAllProduct(){
+        return productService.getAllProduct();
+    }
+
+    @GetMapping("/get-product-ById/{prodId}")
+    public ResponseEntity<ApiResponse> getProductById(@PathVariable Integer prodId){
+        return productService.getProductById(prodId);
+    }
+
+    @DeleteMapping("/delete-product")
+    private ResponseEntity<ApiResponse> deleteProduct(@RequestParam(name = "prodId") Integer prodId ){
+        return productService.deleteProduct(prodId);
+    }
 }
+
