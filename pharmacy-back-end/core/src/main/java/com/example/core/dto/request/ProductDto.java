@@ -1,5 +1,7 @@
 package com.example.core.dto.request;
 
+import com.example.core.entity.Category;
+
 import java.util.Date;
 
 
@@ -18,26 +20,7 @@ public class ProductDto {
     private String createdBy;
     private Date updateAt;
     private String updateBy;
-
-    public ProductDto(Integer productId, String prodName, String prodDescription, String barcode, Double price, Integer qty, String stockStatus, String marketPlaceStatus, Date manufactDate, Date expDate, Date createdAt, String createdBy, Date updateAt, String updateBy) {
-        this.productId = productId;
-        this.prodName = prodName;
-        this.prodDescription = prodDescription;
-        this.barcode = barcode;
-        this.price = price;
-        this.qty = qty;
-        this.stockStatus = stockStatus;
-        this.marketPlaceStatus = marketPlaceStatus;
-        this.manufactDate = manufactDate;
-        this.expDate = expDate;
-        this.createdAt = createdAt;
-        this.createdBy = createdBy;
-        this.updateAt = updateAt;
-        this.updateBy = updateBy;
-    }
-
-    public ProductDto() {
-    }
+    private Integer categoryId;
 
     public Integer getProductId() {
         return productId;
@@ -150,4 +133,39 @@ public class ProductDto {
     public void setUpdateBy(String updateBy) {
         this.updateBy = updateBy;
     }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
+
+
+    public ProductDto() {
+    }
+
+    public ProductDto(Integer productId, String prodName, String prodDescription, String barcode, Double price, Integer qty, String stockStatus, String marketPlaceStatus, Date manufactDate, Date expDate, Date createdAt, String createdBy, Date updateAt, String updateBy, Integer categoryId) {
+        this.productId = productId;
+        this.prodName = prodName;
+        this.prodDescription = prodDescription;
+        this.barcode = barcode;
+        this.price = price;
+        this.qty = qty;
+        this.stockStatus = stockStatus;
+        this.marketPlaceStatus = marketPlaceStatus;
+        this.manufactDate = manufactDate;
+        this.expDate = expDate;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.updateAt = updateAt;
+        this.updateBy = updateBy;
+        this.categoryId = categoryId;
+    }
 }
+
+
+
+
+

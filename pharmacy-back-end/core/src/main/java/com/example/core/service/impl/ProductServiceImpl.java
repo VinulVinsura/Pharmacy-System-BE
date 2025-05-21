@@ -2,9 +2,14 @@ package com.example.core.service.impl;
 
 import com.example.core.dto.request.ProductDto;
 import com.example.core.dto.response.ApiResponse;
+import com.example.core.dto.response.ProductResDto;
+import com.example.core.entity.Category;
 import com.example.core.entity.Product;
+import com.example.core.repository.CategoryRepo;
 import com.example.core.repository.ProductRepo;
 import com.example.core.service.ProductService;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -17,9 +22,14 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
 
     private ProductRepo productRepo;
+    private CategoryRepo categoryRepo;
 
-    public ProductServiceImpl(ProductRepo productRepo) {
+    private ModelMapper modelMapper;
+
+    public ProductServiceImpl(ProductRepo productRepo, CategoryRepo categoryRepo, ModelMapper modelMapper) {
         this.productRepo = productRepo;
+        this.categoryRepo = categoryRepo;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -34,6 +44,8 @@ public class ProductServiceImpl implements ProductService {
                         new ApiResponse(HttpStatus.ALREADY_REPORTED.value(), "This barcode all ready reported", null)
                 );
             }
+            System.out.println(productDto.getCategoryId());
+            Optional<Category> category = categoryRepo.findById(productDto.getCategoryId());
 
             Product product=new Product();
             product.setProdName(productDto.getProdName());
@@ -49,6 +61,8 @@ public class ProductServiceImpl implements ProductService {
             product.setCreatedBy(productDto.getCreatedBy());
             product.setUpdateAt(new Date());
             product.setUpdateBy(productDto.getUpdateBy());
+            product.setCategory_id(category.get());
+
 
             Product save = productRepo.save(product);
             return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -68,8 +82,9 @@ public class ProductServiceImpl implements ProductService {
     public ResponseEntity<ApiResponse> getAllProduct() {
         try {
             List<Product> all = productRepo.findAll();
+            List<ProductResDto> map = modelMapper.map(all, new TypeToken<List<ProductResDto>>(){}.getType());
             return ResponseEntity.status(HttpStatus.FOUND).body(
-                    new ApiResponse(HttpStatus.FOUND.value(), "",all)
+                    new ApiResponse(HttpStatus.FOUND.value(), "",map)
             );
 
         }catch (Exception ex){
@@ -89,9 +104,9 @@ public class ProductServiceImpl implements ProductService {
                         new ApiResponse(HttpStatus.NOT_FOUND.value(), "Invalid ID",null)
                 );
             }
-
+            ProductResDto map = modelMapper.map(byId, ProductResDto.class);
             return ResponseEntity.status(HttpStatus.FOUND).body(
-                    new ApiResponse(HttpStatus.FOUND.value(), "FOUND",byId)
+                    new ApiResponse(HttpStatus.FOUND.value(), "FOUND",map)
             );
 
         }catch (Exception ex){
@@ -146,8 +161,9 @@ public class ProductServiceImpl implements ProductService {
             byId.get().setUpdateBy(productDto.getUpdateBy());
 
             Product updated = productRepo.save(byId.get());
+            ProductResDto map = modelMapper.map(updated, ProductResDto.class);
             return ResponseEntity.status(HttpStatus.OK).body(
-                    new ApiResponse(HttpStatus.OK.value(), "Product updated success",updated)
+                    new ApiResponse(HttpStatus.OK.value(), "Product updated success",map)
             );
 
 
