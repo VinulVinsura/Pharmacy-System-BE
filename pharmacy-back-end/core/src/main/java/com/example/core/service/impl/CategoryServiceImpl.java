@@ -79,13 +79,13 @@ public class CategoryServiceImpl implements CategoryService {
     public ResponseEntity<ApiResponse> getCategoryById(Integer catId) {
         try {
             Optional<Category> byId = categoryRepo.findById(catId);
-            CategoryDto map = modelMapper.map(byId.get(), CategoryDto.class);
+
             if(byId.isEmpty()){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                         new ApiResponse(HttpStatus.NOT_FOUND.value(), "Invalid ID",null)
                 );
             }
-
+            CategoryDto map = modelMapper.map(byId.get(), CategoryDto.class);
             return ResponseEntity.status(HttpStatus.FOUND).body(
                     new ApiResponse(HttpStatus.FOUND.value(), "FOUND",map)
             );

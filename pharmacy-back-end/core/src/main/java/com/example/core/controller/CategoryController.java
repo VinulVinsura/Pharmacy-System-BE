@@ -34,7 +34,7 @@ public class CategoryController {
     }
 
 
-    @DeleteMapping("/add-category")
+    @DeleteMapping("/delete-category")
     public ResponseEntity<ApiResponse> deleteCategory(@RequestParam(name = "cat_id") Integer cat_id){
         return categoryService.deleteCategory(cat_id);
 
